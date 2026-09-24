@@ -775,9 +775,16 @@ const AI = (() => {
 })();
 
 // ===== サウンド（WebAudio 合成）=====
+// iPhone のマナーモードでも鳴らす（Safari 16.4 以降）。
+// 'playback' にすると音楽アプリの曲が止まるので、アプリの音がオンのときだけにする。
+function setAudioSession(soundOn) {
+  try { if (navigator.audioSession) navigator.audioSession.type = soundOn ? 'playback' : 'auto'; } catch { /* 対応していない */ }
+}
+
 const Sound = {
   on: true, ctx: null,
   ensure() {
+    if (!this.ctx || this.ctx.state === 'suspended') setAudioSession(this.on);
     if (!this.ctx) { try { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch { return null; } }
     if (this.ctx.state === 'suspended') this.ctx.resume();
     return this.ctx;
@@ -1065,6 +1072,7 @@ function rotateStep(axis, ang) {
 const settings = Object.assign({ mode: 'cpu', human: BLACK, level: 'normal', N: 4 }, store.get('settings', {}));
 const prefs = Object.assign({ hints: true, net: innerWidth > 520, sound: true, tapTip: false }, store.get('prefs', {}));
 Sound.on = prefs.sound;
+setAudioSession(prefs.sound);
 const S = { board: null, turn: BLACK, last: -1, history: [], over: false, moves: new Map(),
   mode: 'cpu', human: BLACK, level: 'normal', thinking: false, ver: 0, active: false };
 const LEVEL_NAME = { easy: 'やさしい', normal: 'ふつう', hard: 'つよい' };
@@ -1563,7 +1571,7 @@ $('#bUndo').onclick = undoMove;
 $('#bView').onclick = () => { zoom = 1; fitCamera(); rotateWorldTo(HOME); };
 $('#bHint').onclick = toggleHints;
 $('#bNet').onclick = toggleNet;
-$('#bSound').onclick = () => { prefs.sound = Sound.on = !prefs.sound; savePrefs(); syncDock(); if (prefs.sound) Sound.select(); };
+$('#bSound').onclick = () => { prefs.sound = Sound.on = !prefs.sound; setAudioSession(prefs.sound); savePrefs(); syncDock(); if (prefs.sound) Sound.select(); };
 $('#bHelp').onclick = () => openOverlay('help');
 $('#bMenu').onclick = () => openOverlay('menu');
 
