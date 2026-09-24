@@ -4,7 +4,7 @@
 // three.js（jsDelivr）と Google Fonts は版が固定で変わらないので cache-first。
 // three.js はインストール時に先に取っておき、初回のあと圏外になっても立方体が描けるようにする。
 //
-// 注意: キャッシュ（CacheStorage）は sora3141.github.io のすべてのアプリで共有されている。
+// 注意: キャッシュ（CacheStorage）は t-of.github.io のすべてのアプリで共有されている。
 // 古いキャッシュを消すときは、必ず自分の PREFIX で始まるものだけを消す。
 // keys.filter(k => k !== CACHE) のように書くと、ほかのアプリのキャッシュまで消してしまう。
 

@@ -4,8 +4,8 @@
 
 ## 🔗 リンク
 
-- 遊ぶ: https://sora3141.github.io/cube-othello/
-- 制作: [T.OF...](https://sora3141.github.io/)
+- 遊ぶ: https://t-of.github.io/cube-othello/
+- 制作: [T.OF...](https://t-of.github.io/)
 
 ## 遊び方
 
@@ -44,6 +44,6 @@ python3 -m http.server 8000   # → http://localhost:8000/
 - `index.html` — アプリ本体（three.js を CDN から読み込み）
 - `sw.js` — オフライン用のサービスワーカー（three.js の版を変えたら `LIBS` もそろえる）
 - `manifest.webmanifest`, `icons/` — PWA の設定とアイコン
-- `webapp-kit/` — 「アプリにする」「共有」ボタン（正本は [sora3141.github.io](https://github.com/Sora3141/sora3141.github.io) の `webapp-kit/`）
+- `webapp-kit/` — 「アプリにする」「共有」ボタン（正本は [t-of.github.io](https://github.com/t-of/t-of.github.io) の `webapp-kit/`）
 
 設定・対局は端末の `localStorage`（`cube-othello.` で始まるキー）に保存します。

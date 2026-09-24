@@ -2,6 +2,10 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
+<script>/* sora3141.github.io から移ってきた記録を受け取る。ponytail: 2027-09 ごろに消す */
+(function(){var m=location.hash.match(/^#tof-move=([^&]*)&?(.*)$/);if(!m)return;
+try{var d=JSON.parse(decodeURIComponent(m[1]));for(var k in d)if(localStorage.getItem(k)===null)localStorage.setItem(k,d[k]);}catch(e){}
+history.replaceState(null,'',location.pathname+location.search+(m[2]?'#'+m[2]:''));})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#07110d">
 <meta name="description" content="立方体の6つの面すべてが盤面のオセロ。縦と横の列は辺を越えて隣の面へつながります。CPU対戦・ふたり対戦、2×2×2〜6×6×6。">
@@ -11,8 +15,8 @@
 <meta property="og:site_name" content="キューブ・オセロ">
 <meta property="og:title" content="キューブ・オセロ — 立方体の6面で遊ぶオセロ">
 <meta property="og:description" content="立方体の6つの面すべてが盤面のオセロ。縦と横の列は辺を越えて隣の面へつながります。">
-<meta property="og:url" content="https://sora3141.github.io/cube-othello/">
-<meta property="og:image" content="https://sora3141.github.io/cube-othello/icons/og.png">
+<meta property="og:url" content="https://t-of.github.io/cube-othello/">
+<meta property="og:image" content="https://t-of.github.io/cube-othello/icons/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="ja_JP">
@@ -512,7 +516,7 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 const $ = s => document.querySelector(s);
 const BLACK = 1, WHITE = 2;
 const now = () => performance.now();
-// localStorage は sora3141.github.io の全アプリで共有されるので、キーは 'cube-othello.' で始める。
+// localStorage は t-of.github.io の全アプリで共有されるので、キーは 'cube-othello.' で始める。
 // 以前の 'cubeOthello.*' に保存された設定・対局は、初回に新しいキーへ移す。
 const STORE = 'cube-othello.';
 try {
