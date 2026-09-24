@@ -4,7 +4,29 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#07110d">
-<title>キューブ・オセロ</title>
+<meta name="description" content="立方体の6つの面すべてが盤面のオセロ。縦と横の列は辺を越えて隣の面へつながります。CPU対戦・ふたり対戦、2×2×2〜6×6×6。">
+<title>キューブ・オセロ — 立方体の6面で遊ぶオセロ</title>
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="キューブ・オセロ">
+<meta property="og:title" content="キューブ・オセロ — 立方体の6面で遊ぶオセロ">
+<meta property="og:description" content="立方体の6つの面すべてが盤面のオセロ。縦と横の列は辺を越えて隣の面へつながります。">
+<meta property="og:url" content="https://sora3141.github.io/cube-othello/">
+<meta property="og:image" content="https://sora3141.github.io/cube-othello/icons/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+
+<!-- apple-mobile-web-app-status-bar-style は付けない（black-translucent だと iOS 26 で上部が隠れる） -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="キューブ・オセロ">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icons/icon.svg" type="image/svg+xml">
+<link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png">
+<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+<link rel="stylesheet" href="./webapp-kit/webapp-kit.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
@@ -29,14 +51,25 @@
     --num: "Outfit", -apple-system, "Helvetica Neue", sans-serif;
     --safe-t: env(safe-area-inset-top, 0px);
     --safe-b: env(safe-area-inset-bottom, 0px);
+    --safe-l: env(safe-area-inset-left, 0px);
+    --safe-r: env(safe-area-inset-right, 0px);
+    /* webapp-kit（インストール案内・コピー通知）をこのアプリの色に */
+    --wak-bg: #0f1e19;
+    --wak-fg: #eef4f0;
+    --wak-muted: #93a99f;
+    --wak-line: rgba(255, 255, 255, .16);
+    --wak-accent: #f2c66d;
+    --wak-accent-fg: #1d1405;
+    --wak-font: var(--font);
     color-scheme: dark;
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  /* Safari 26 の上下バーの色は html の背景色から取られるので、theme-color と同じ色を下地に敷く */
   html, body {
-    margin: 0; height: 100%; overflow: hidden; overscroll-behavior: none;
+    margin: 0; height: 100%; height: 100dvh; overflow: hidden; overscroll-behavior: none;
     font-family: var(--font); color: var(--text);
     background:
-      radial-gradient(120% 80% at 50% 38%, var(--bg-2) 0%, var(--bg-1) 45%, var(--bg-0) 100%);
+      radial-gradient(120% 80% at 50% 38%, var(--bg-2) 0%, var(--bg-1) 45%, var(--bg-0) 100%) #07110d;
     -webkit-font-smoothing: antialiased;
     user-select: none; -webkit-user-select: none;
   }
@@ -133,7 +166,7 @@
 
   /* ---------- net (unfolded cube) ---------- */
   .net-panel {
-    position: fixed; right: 18px; bottom: calc(18px + var(--safe-b)); z-index: 5;
+    position: fixed; right: calc(18px + var(--safe-r)); bottom: calc(18px + var(--safe-b)); z-index: 5;
     width: 264px; padding: 10px 12px 12px; border-radius: 18px;
     transition: opacity .25s, transform .25s;
   }
@@ -163,14 +196,15 @@
   /* ---------- overlays ---------- */
   .overlay {
     position: fixed; inset: 0; z-index: 20;
-    display: grid; place-items: center; padding: 20px;
+    display: grid; place-items: center;
+    padding: calc(20px + var(--safe-t)) calc(20px + var(--safe-r)) calc(20px + var(--safe-b)) calc(20px + var(--safe-l));
     background: rgba(2, 7, 5, .38);
     opacity: 0; transition: opacity .22s;
   }
   .overlay.show { opacity: 1; }
-  .overlay.clear { background: linear-gradient(90deg, rgba(2,7,5,.78) 0%, rgba(2,7,5,.35) 55%, rgba(2,7,5,0) 100%); place-items: center start; padding-left: max(20px, 7vw); }
+  .overlay.clear { background: linear-gradient(90deg, rgba(2,7,5,.78) 0%, rgba(2,7,5,.35) 55%, rgba(2,7,5,0) 100%); place-items: center start; padding-left: max(20px, 7vw, calc(20px + var(--safe-l))); }
   .sheet {
-    width: min(440px, 100%); max-height: calc(100vh - 40px); overflow: auto;
+    width: min(440px, 100%); max-height: calc(100dvh - 40px - var(--safe-t) - var(--safe-b)); overflow: auto;
     padding: 28px 26px 22px; border-radius: 24px;
     background: rgba(12, 24, 19, .86);
     backdrop-filter: blur(22px) saturate(1.2); -webkit-backdrop-filter: blur(22px) saturate(1.2);
@@ -216,6 +250,18 @@
     transition: background .15s;
   }
   .ghost-btn:hover { background: rgba(255,255,255,.1); }
+  .ghost-btn svg { width: 15px; height: 15px; vertical-align: -2px; margin-right: 6px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .foot { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin-top: 14px; }
+  .credit { margin: 0 auto 0 2px; font-size: 11.5px; color: var(--faint); letter-spacing: .04em; white-space: nowrap; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 5px; min-height: 44px; padding: 0 10px; border-radius: 999px; white-space: nowrap;
+    font-size: 12.5px; color: var(--muted); border: 1px solid var(--line); background: rgba(255,255,255,.03);
+    transition: background .15s, color .15s;
+  }
+  .chip:hover { background: rgba(255,255,255,.08); color: var(--text); }
+  .chip svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .credit a { color: var(--muted); text-decoration: none; font-family: var(--num); font-weight: 600; letter-spacing: .08em; }
+  .credit a:hover { color: var(--gold); }
 
   .rules { margin: 0; padding: 0; list-style: none; counter-reset: r; }
   .rules li { counter-increment: r; position: relative; padding: 0 0 14px 38px; font-size: 13.5px; line-height: 1.75; color: var(--muted); }
@@ -250,10 +296,10 @@
     .who b { font-size: 13px; }
     .dock button { min-width: 48px; height: 50px; font-size: 10px; }
     .dock .sep { margin: 10px 2px; }
-    .net-panel { width: min(46vw, 210px); right: 12px; bottom: calc(86px + var(--safe-b)); padding: 8px 9px 9px; border-radius: 14px; }
+    .net-panel { width: min(46vw, 210px); right: calc(12px + var(--safe-r)); bottom: calc(86px + var(--safe-b)); padding: 8px 9px 9px; border-radius: 14px; }
     .net-head span { display: none; }
     .toast { top: calc(128px + var(--safe-t)); font-size: 13px; white-space: normal; text-align: center; width: max-content; max-width: calc(100vw - 32px); }
-    .overlay.clear { place-items: end center; padding: 16px; background: linear-gradient(0deg, rgba(2,7,5,.85) 0%, rgba(2,7,5,.4) 60%, rgba(2,7,5,0) 100%); }
+    .overlay.clear { place-items: end center; padding: calc(16px + var(--safe-t)) 16px calc(16px + var(--safe-b)); background: linear-gradient(0deg, rgba(2,7,5,.85) 0%, rgba(2,7,5,.4) 60%, rgba(2,7,5,0) 100%); }
     .sheet { padding: 22px 18px 18px; border-radius: 20px; }
     .sheet h1 { font-size: 24px; }
     .figure { flex-direction: column; }
@@ -371,6 +417,11 @@
       <button class="ghost-btn" id="bResume">対局に戻る</button>
       <button class="ghost-btn" id="bRules">ルール</button>
     </div>
+    <div class="foot">
+      <p class="credit"><a href="/">T.OFO</a> のアプリ</p>
+      <button class="chip" data-wak="install" hidden><svg viewBox="0 0 24 24"><path d="M12 3.5v11M7.5 10l4.5 4.5 4.5-4.5"/><path d="M4.5 16.5v2a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-2"/></svg>アプリにする</button>
+      <button class="chip" data-wak="share"><svg viewBox="0 0 24 24"><path d="M12 14.5V3.5M8 7.5l4-4 4 4"/><path d="M7.5 11H6.5a2 2 0 0 0-2 2v5.5a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V13a2 2 0 0 0-2-2h-1"/></svg>共有</button>
+    </div>
   </div>
 </div>
 
@@ -434,6 +485,9 @@
       <button class="ghost-btn" id="bBoard">盤面を見る</button>
       <button class="ghost-btn" id="bSettings">設定を変える</button>
     </div>
+    <div class="row2">
+      <button class="ghost-btn" id="bShareResult"><svg viewBox="0 0 24 24"><path d="M12 14.5V3.5M8 7.5l4-4 4 4"/><path d="M7.5 11H6.5a2 2 0 0 0-2 2v5.5a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V13a2 2 0 0 0-2-2h-1"/></svg>結果を共有</button>
+    </div>
   </div>
 </div>
 
@@ -443,6 +497,13 @@
   "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
 }}
 </script>
+<script src="./webapp-kit/webapp-kit.js"></script>
+<script>
+  WebAppKit.init({ title: 'キューブ・オセロ', text: '立方体の6面で遊ぶオセロ「キューブ・オセロ」' });
+  if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+    navigator.serviceWorker.register('./sw.js');
+  }
+</script>
 <script type="module">
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
@@ -451,9 +512,20 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 const $ = s => document.querySelector(s);
 const BLACK = 1, WHITE = 2;
 const now = () => performance.now();
+// localStorage は sora3141.github.io の全アプリで共有されるので、キーは 'cube-othello.' で始める。
+// 以前の 'cubeOthello.*' に保存された設定・対局は、初回に新しいキーへ移す。
+const STORE = 'cube-othello.';
+try {
+  for (const k of ['settings', 'prefs', 'game']) {
+    const old = localStorage.getItem('cubeOthello.' + k);
+    if (old == null) continue;
+    if (localStorage.getItem(STORE + k) == null) localStorage.setItem(STORE + k, old);
+    localStorage.removeItem('cubeOthello.' + k);
+  }
+} catch {}
 const store = {
-  get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch { return d; } },
-  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+  get(k, d) { try { const v = localStorage.getItem(STORE + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(STORE + k, JSON.stringify(v)); } catch {} },
 };
 const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -990,8 +1062,8 @@ function rotateStep(axis, ang) {
 }
 
 // ===== ゲーム状態 =====
-const settings = Object.assign({ mode: 'cpu', human: BLACK, level: 'normal', N: 4 }, store.get('cubeOthello.settings', {}));
-const prefs = Object.assign({ hints: true, net: innerWidth > 520, sound: true, tapTip: false }, store.get('cubeOthello.prefs', {}));
+const settings = Object.assign({ mode: 'cpu', human: BLACK, level: 'normal', N: 4 }, store.get('settings', {}));
+const prefs = Object.assign({ hints: true, net: innerWidth > 520, sound: true, tapTip: false }, store.get('prefs', {}));
 Sound.on = prefs.sound;
 const S = { board: null, turn: BLACK, last: -1, history: [], over: false, moves: new Map(),
   mode: 'cpu', human: BLACK, level: 'normal', thinking: false, ver: 0, active: false };
@@ -1014,7 +1086,7 @@ function whenIdle(fn, extra = 40) {
 }
 
 function startGame(intro = true, active = true) {
-  store.set('cubeOthello.settings', settings);
+  store.set('settings', settings);
   if (!T || T.N !== settings.N) setupBoard(settings.N);
   S.mode = settings.mode; S.human = settings.human; S.level = settings.level;
   S.board = new Int8Array(T.M);
@@ -1117,13 +1189,13 @@ function finish() {
 function save() {
   if (!S.active) return;
   const enc = a => Array.from(a).join('');
-  store.set('cubeOthello.game', {
+  store.set('game', {
     N: T.N, mode: S.mode, human: S.human, level: S.level, board: enc(S.board), turn: S.turn, last: S.last, over: S.over,
     history: S.history.map(h => ({ b: enc(h.board), t: h.turn, l: h.last })),
   });
 }
 function restore() {
-  const g = store.get('cubeOthello.game', null);
+  const g = store.get('game', null);
   if (!g || g.over || ![2, 4, 6].includes(g.N)) return false;
   const M = 6 * g.N * g.N;
   const dec = s => Int8Array.from(s, ch => +ch);
@@ -1322,7 +1394,7 @@ function select(idx, ptype, fromNet) {
   if (!isFacing(idx)) rotateToCell(idx, 480);
   Sound.select();
   updatePreview();
-  if (!prefs.tapTip) { toast('同じマスをもう一度タップすると置けます', 2600); prefs.tapTip = true; store.set('cubeOthello.prefs', prefs); }
+  if (!prefs.tapTip) { toast('同じマスをもう一度タップすると置けます', 2600); prefs.tapTip = true; store.set('prefs', prefs); }
 }
 
 const pointers = new Map();
@@ -1469,11 +1541,15 @@ $('#bAgain').onclick = () => { closeOverlay('result'); startGame(true); };
 $('#bBoard').onclick = () => closeOverlay('result');
 $('#bSettings').onclick = () => { closeOverlay('result'); openOverlay('menu'); };
 $('#status').onclick = () => { if (S.over) openOverlay('result'); };
+$('#bShareResult').onclick = () => {
+  const b = $('#resB').textContent, w = $('#resW').textContent;
+  WebAppKit.share({ text: `キューブ・オセロ（${T.N}×${T.N}×${T.N}）で${$('#resTitle').textContent}！ 黒 ${b} – ${w} 白` });
+};
 
 // ----- ドック -----
 const ICON_SOUND_ON = '<path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.8a4.5 4.5 0 0 1 0 6.4M18.3 6a8.5 8.5 0 0 1 0 12"/>';
 const ICON_SOUND_OFF = '<path d="M11 5 6 9H3v6h3l5 4z"/><path d="m16 9.5 5 5m0-5-5 5"/>';
-function savePrefs() { store.set('cubeOthello.prefs', prefs); }
+function savePrefs() { store.set('prefs', prefs); }
 function toggleHints() { prefs.hints = !prefs.hints; savePrefs(); syncDock(); refreshFx(); toast(prefs.hints ? 'ヒントを表示します' : 'ヒントを隠しました', 1100); }
 function toggleNet() { prefs.net = !prefs.net; savePrefs(); syncDock(); if (prefs.net) { sizeNet(); netDirty = true; } }
 function syncDock() {

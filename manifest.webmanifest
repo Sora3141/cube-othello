@@ -1,0 +1,19 @@
+{
+  "id": "./",
+  "name": "キューブ・オセロ — 立方体の6面で遊ぶオセロ",
+  "short_name": "キューブ・オセロ",
+  "description": "立方体の6つの面すべてが盤面のオセロ。縦と横の列は辺を越えて隣の面へつながります。",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#07110d",
+  "theme_color": "#07110d",
+  "lang": "ja",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
